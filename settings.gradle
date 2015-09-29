@@ -1,0 +1,10 @@
+include 'Commons', 'Agent', 'CommonsCS', 'CMR'
+
+def renameBuildFiles(project){
+   project.buildFileName = "${project.name}.gradle"
+    project.children.each{ childProject ->
+        renameBuildFiles(childProject)
+    }
+}
+renameBuildFiles(rootProject)
+

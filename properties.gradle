@@ -1,0 +1,85 @@
+subprojects {
+
+	ext {
+		//Some QA settings
+		baseDir = project.projectDir
+		buildRoot = "${baseDir}/build"
+		buildClassesRoot = "${buildRoot}/classes"
+		buildClassesMain = "${buildClassesRoot}/main"
+		buildClassesTest = "${buildClassesRoot}/test"
+		buildReleaseRoot = "${buildRoot}/release"
+		buildQARoot = "${buildRoot}/QA"
+		buildQAAnalysis = "${buildQARoot}/static_analysis"
+		buildQAAnalysisPMD = "${buildQAAnalysis}/pmd"
+		buildQAAnalysisFindbugs =  "${buildQAAnalysis}/findbugs"
+		buildQAAnalysisCheckstyle =  "${buildQAAnalysis}/checkstyle"
+		buildQAAnalysisCPD =  "${buildQAAnalysis}/cpd"
+		buildQATest = "${buildQARoot}/functional_tests"
+		buildQATestTestdata = "${buildQATest}/testdata"
+		buildQATestCoveragedata = "${buildQATest}/coveragedata"
+	
+		//General settings
+		srcRoot = "${baseDir}/src"
+		
+		mainRoot = "${srcRoot}/main"
+		mainJava = "${mainRoot}/java"
+		mainResources = "${mainRoot}/resources"
+		mainExtResources = "${mainRoot}/external-resources"
+		
+		testRoot = "${srcRoot}/test"
+		testJava = "${testRoot}/java"
+		testResources = "${testRoot}/resources"
+		
+		libRoot = "${baseDir}/lib"
+		configRoot = "${baseDir}/config"
+		buildInstrumentedClasses = "${buildClassesRoot}/instrumented"
+		java15RuntimePath = "${sharedResources}/java15runtime"
+		
+		//Set up for shared resources
+		
+		/* FYI - this property is specified in inspectIT.gradle
+		/  it points to the 'shared-resources' folder in the parent project
+		/  sharedResources = project(:inspectIT)/shared-resources
+		*/
+		sharedResourcesConfig = "${sharedResources}/config"
+		sharedResourcesLicense = "${sharedResources}/license"
+		
+		//Settings for TestNG
+		resourcesTestNG = "${testResources}/testng/testng.xml"
+		
+		// Settings for FTP
+		ftpUser = "anonymous"
+		ftpPw = "anonymous"
+		ftpServer= "ntftp.novatec-gmbh.de"
+	
+		// internal branch of the FTP, not visible to anonymous
+		ftpInternalBasedir = "inspectit/resources"
+		ftpInternalJava15runtimePath = "${ftpInternalBasedir}/java15runtime"
+		ftpInternalJava15runtimeFile = "rt.jar.zip"
+		ftpInternalJvmInstallations = "${ftpInternalBasedir}/jvm_installations"
+		
+		//Settings for PMD
+		pmdConfigRoot = "${sharedResourcesConfig}/pmd"
+		pmdRulesFile = "${pmdConfigRoot}/pmd_rules.xml"
+		pmdReportFile = "${pmdConfigRoot}/pmd-report.xslt"
+		pmdSortableFile = "${pmdConfigRoot}/sorttable.js"	
+		
+		//Settings for checkstyle
+		checkstyleConfigRoot = "${sharedResourcesConfig}/checkstyle"
+		checkstyleConfigFile = "${checkstyleConfigRoot}/inspectit-checkstyle.xml"
+		checkstyleReportFile = "${checkstyleConfigRoot}/checkstyle.xsl"
+		checkstyleMaxErrors = 0
+		checkstyleMaxWarning = 0
+		
+		//Settings for FindBugs
+		findbugsConfigRoot = "${sharedResourcesConfig}/findbugs"
+		findbugsConfigFancyHist = "${findbugsConfigRoot}/fancy-hist.xsl"
+		findbugsConfigInclude = "${findbugsConfigRoot}/findBugsIncludeFilter.xml"
+		findbugsConfigExclude = "${findbugsConfigRoot}/findBugsExcludeFilter.xml"
+		
+		//Settings for CPD
+		cpdConfigRoot = "${sharedResourcesConfig}/cpd"
+		cpdReportFile ="${cpdConfigRoot}/cpdhtml.xslt"
+	}
+	
+}	

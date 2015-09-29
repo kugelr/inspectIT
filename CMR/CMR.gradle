@@ -1,0 +1,364 @@
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'de.aaschmid.cpd'
+
+//why do i have to add is here? should be availible through subprojects block in inspectIT.gradle 
+apply plugin: "java"
+
+apply from: 'PropertiesCMR.gradle'
+
+defaultTasks "jar", "packageJVM"
+//defaultTasks "cmrReleaseAndAnalyze"
+
+//some CMR specific properties
+ext {
+	distJarName = "inspectit-cmr"
+	moduleVersionTarget = "0.1"	
+	buildReleaseRootCMR = "${buildReleaseRoot}/CMR"
+}
+
+//specific configuration of the sourceSets
+sourceSets {
+	main {
+		java {
+			compileClasspath = configurations.cmrProd
+			compileClasspath += configurations.commonsProd
+			compileClasspath += configurations.commonsCSProd
+			//is this correct or is there something with classes?
+			compileClasspath += project(':Commons').sourceSets.main.output
+			compileClasspath += project(':CommonsCS').sourceSets.main.output
+		}
+	}
+	test {
+		java {
+			compileClasspath = configurations.cmrProd
+			compileClasspath += configurations.cmrTest
+			compileClasspath += configurations.commonsProd
+			compileClasspath += configurations.commonsCSProd
+			compileClasspath += sourceSets.main.output
+			compileClasspath += files(project(':Commons').jar.outputs)
+			compileClasspath += files(project(':CommonsCS').jar.outputs)
+		}
+	}
+}
+
+//writing the absolute path of the classmexer.jar into a property
+//this property is used in the executeTestNG task to start the jvm
+ext.classmexerPath = configurations.classmexer.asPath
+
+executeTestNG {
+	classpath += configurations.cmrProd
+	classpath += configurations.cmrTest
+	classpath += configurations.commonsProd
+	classpath += configurations.commonsCSProd
+	classpath += files("test/resources")
+	classpath += files(project(':Commons').jar.outputs)
+	classpath += files(project(':CommonsCS').jar.outputs)
+	classpath += files(project(':CMR').sourceSets.main.java.srcDirs)
+	classpath += files(project(':CMR').sourceSets.test.java.srcDirs)
+	classpath += files(project(':CMR').sourceSets.main.output)
+	classpath += files(project(':CMR').sourceSets.test.output)
+	
+	//TODO
+	//transform the cmrJavaOpts32bit property
+
+	jvmArgs = ["-XX:-UseSplitVerifier","-javaagent:${classmexerPath}", cmrJavaOpts32bit]
+}
+
+compileJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debugOptions.debugLevel = "source,lines,vars"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+	
+compileTestJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+	
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+
+//RELEASE TARGETS
+
+
+task copyCMRResources(type: Copy) {
+	into("libs") {
+		from project(':Commons').jar.outputs
+		from project(':CommonsCS').jar.outputs
+		from configurations.cmrProd
+		from configurations.commonsProd
+		from configurations.commonsCSProd
+	}
+	into("config") {
+		from file("config")
+	}
+	into("logs") {
+		from file("logs")
+	}
+	from file("logging-config.xml")
+	
+	destinationDir = file("${buildReleaseRootCMR}")
+
+}
+
+
+jar {
+	//prepare manifest during runtime because the libs folder has to be created first
+	doFirst {
+		ext.manifestLibs = fileTree(dir:"${buildReleaseRootCMR}/libs", include: "**/*.jar").files.collect{'libs/' + it.name}.iterator().join(', ')
+		manifest {
+			attributes(
+				"Main-Class": "info.novatec.inspectit.cmr.CMR",
+				"Class-Path": manifestLibs
+				)
+		}
+	}
+	dependsOn(copyCMRResources)
+	libsDirName = "${buildReleaseRootCMR}"
+	archivesBaseName = "${distJarName}"
+}
+
+///////////////// JVM DOWNLOAD AND STUFF
+
+task downloadJVM << {
+	//iterating over jvmList - right now looks it looks like: jvmList = ['jre7-linux-x64', 'jre7-linux-x86', 'jre7-windows-x86', 'jre7-windows-x64']
+	jvmList.each { jvm ->
+		//create a File Object of Path+File I want to download. For example: /home/rk/gradle-project/inspectIT/CMR/src/main/external-resources/jvm/jre7-linux-x64.zip 
+		File jvmFile = new File("${jvmRoot}/${jvm}.zip")
+		//check whether the file is already present
+		if(!jvmFile.exists()){
+			//download the file from the ftp server
+			ant {
+				taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
+				ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJvmInstallations}") {
+					fileset(dir: "${jvmRoot}") {
+						include(name: "${jvm}.zip")
+					}
+				}	
+			}
+		}	
+	}
+}
+
+ext.os = ""
+ext.arc = ""
+ext.osArc = ""
+ext.command = ""
+task packageJVM(dependsOn: downloadJVM) {
+	jvmList.each { jvm ->
+		//read operating system
+		if("${jvm}".contains('windows')) {
+			os = 'windows'
+		}
+		else if("${jvm}".contains('linux')) {
+			os = 'linux'
+		}
+		//read operating system architecture
+		if("${jvm}".contains('x86')) {
+			arc = 'x86'
+		}
+		else if("${jvm}".contains('x64')) {
+			arc = 'x64'
+		}
+		osArc = os + arc 
+		//set set the certain startup command
+		if(os == 'windows') {
+			if(arc == 'x86') {
+				command = "${cmrJavaCommandWin} ${cmrJavaMemory32bit} ${cmrJavaOpts32bit} ${cmrJavaOptsWin} ${cmrJavaLocgcWin} -jar ${distJarName}.jar"
+			}
+			else if (arc == 'x64'){
+				command = "${cmrJavaCommandWin} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsWin} ${cmrJavaLocgcWin} -jar ${distJarName}.jar"
+			}
+			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.bat', "${command}", "${name}")
+			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
+			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.sh", jvm, "zip", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")
+		}
+		else if (os == 'linux') {
+			if(arc == 'x86') {
+				command = "${cmrJavaCommandLinux} ${cmrJavaMemory32bit} ${cmrJavaOpts32bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
+			}
+			else if (arc == 'x64'){
+				command = "${cmrJavaCommandWin} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
+			}
+			//create task for certain os&arc
+			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.sh', "${command}", "${name}")
+			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
+			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.sh", jvm, "tar.gz", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")	
+		}
+		//execute certain task
+		packageJVM.finalizedBy "copySpecificFilesFor${osArc}"
+		packageJVM.finalizedBy "unzipSpecificJreFor${osArc}"
+		packageJVM.finalizedBy "packageCMRFor${osArc}"
+	}
+}
+
+
+//trying to create a dynamicTask
+def copyOsSpecificFiles(fromDir, toDir, fileName, command, dependsOn) {
+    return tasks.create("copySpecificFilesFor${osArc}", Copy) {
+        from fromDir 
+        include fileName
+        into toDir 
+        filter{
+        		String line -> line.replaceAll('#COMMAND#', command)
+        }
+    }
+}
+
+def unzipOsSpecificJre(toDir, jvm) {
+	return tasks.create("unzipSpecificJreFor${osArc}", Copy) {
+		dependsOn downloadJVM 
+		from(zipTree(file("${jvmRoot}/${jvm}.zip")))
+		into "${toDir}/jre"
+	}
+}
+
+def packageCMR(startupFile, jvm, fileExtension, jre) {
+	return tasks.create("packageCMRFor${osArc}", Zip) {
+		dependsOn "unzipSpecificJreFor${osArc}"
+		destinationDir = file("${buildReleaseRoot}/packages")
+		archiveName = "inspectit-cmr.${os}.${arc}.${fileExtension}"
+		into("CMR") {
+			from file("${buildReleaseRoot}/CMR")
+			from startupFile
+			from files(sharedResourcesLicense)
+		}
+		into("CMR/jre"){
+			from file("${jre}")
+		}
+	}
+}
+
+task executeDynamicTasks {
+
+}
+
+//Pseudo if für cmr distributionen
+/*
+jvmList.each { jvm ->
+	//checking for architecture
+	if(jvm.contains(x86)){
+	 	set arc = x86
+	} 
+	else if (jvm.contains(x64)){
+		set arc = x64
+	}
+	
+	//checking for os
+	if(jvm.contains(windwos)){
+	 	set os = windows
+	} 
+	else if (jvm.contains(linux)){
+		set os = linux
+	}
+	
+	if(os=linux) {
+		copy startup.sh from A to B
+		replace(#COMMAND#, startupcommand+linux+arc)
+		zip(name=linux+arc) 
+	}
+	else if(os=windows) {
+		copy startup.bat from A to B
+		replace(#COMMAND#, startupcommand+windows+arc)
+		zip(name=windows+arc)
+	}		
+}	
+
+*/
+
+
+/*
+task downloadJava15 {
+	//download from ftp server if zip file does not already exist
+	File java15zip = new File("${java15RuntimePath}/${ftpInternalJava15runtimeFile}")
+	if(!java15zip.exists()){
+		ant {
+			taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
+			ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJava15runtimePath}") {
+				fileset(dir: "${java15RuntimePath}") {
+					include(name: "${ftpInternalJava15runtimeFile}")
+				}
+			}	
+		}
+	}
+	else {
+		println "${ftpInternalJava15runtimeFile} already exists in ${java15RuntimePath} - Skipping FTP download"
+	}
+	outputs.file java15zip
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//QA Targets
+
+//don't get the functional difference between cpd{} and cpdCheck{}
+//somehow those tasks/configuration overwrite each other
+cpdCheck {
+	source = sourceSets.main.allJava
+	ignoreFailures = true
+	reports {
+		xml {
+			enabled = true
+			destination = file("${buildQAAnalysisCPD}/main.xml")
+		}
+	}
+}
+
+//somehow i would like to outsource this to the subprojects of the inspectIT.gradle
+//but if i do so the coverageReportDir will set to default
+//i think i has something to do with the baseDir property which is not created dynamically
+// configuriation of corbertura
+cobertura {
+	//instrumatation
+	coverageInputDatafile = file("${buildQATestCoveragedata}/coberturaIn.ser")
+	coverageDirs = ["${buildInstrumentedClasses}"] 
+	coverageIncludes = ['info.novatec.inspectit.**']
+	coverageExcludes = ['info.novatec.inspectit.*.test.*', 'info.novatec.inspectit.*.*_Stub.*']
+	auxiliaryClasspath += files("${buildInstrumentedClasses}")
+	auxiliaryClasspath += configurations.commonsProd
+	auxiliaryClasspath += configurations.commonsCSProd
+	auxiliaryClasspath += project(':Commons').sourceSets.main.output
+	auxiliaryClasspath += project(':CommonsCS').sourceSets.main.output
+	
+	//reporting
+	//the OutputFile is automatically added to jvmArgs
+	coverageOutputDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDir = file("${buildQATestCoveragedata}")
+	coverageFormats = ['xml', 'html']	
+}
+
+task cmrRelease {
+	dependsOn(build)
+}
+
+task cmrAnalyze {
+	dependsOn(':CMR:coberturaCheck', ':CMR:executeTestNG', ':CMR:pmdMain', ':CMR:checkstyleMain', ':CMR:findbugsMain', ':CMR:cpdCheck',':CMR:cpdHtmlReport')
+}
+
+task cmrReleaseAndAnalyze {
+	dependsOn(cmrRelease, cmrAnalyze)
+	cmrRelease.mustRunAfter(cmrAnalyze)
+}
