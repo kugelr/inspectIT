@@ -1,0 +1,152 @@
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'de.aaschmid.cpd'
+defaultTasks "agentReleaseAndAnalyze"
+//defaultTasks "outTask"
+
+evaluationDependsOn(':Commons')
+
+//some agent specific properties
+ext {
+	distJarName = "inspectit-agent"
+	releaseNameSun15 = "inspectit-agent-sun1.5.zip"
+	moduleVersionTarget = "0.1"
+	
+	//specific release structure
+	sun15DataAgent = "${buildReleaseRoot}/sun15Data/agent"
+	sun15DataAgentConfig = "${sun15DataAgent}/config"
+}
+
+configurations {
+	compile {
+		extendsFrom configurations.agentProd
+		extendsFrom configurations.agentTest
+	}
+}
+
+
+//specific configuration of the sourceSets
+sourceSets {
+	main {
+		java {
+			compileClasspath = configurations.agentProd
+			compileClasspath += configurations.commonsProd
+			compileClasspath += project(':Commons').sourceSets.main.output
+		}
+	}
+	test {
+		java {
+			compileClasspath = configurations.agentProd
+			compileClasspath += configurations.agentTest
+			compileClasspath += configurations.commonsProd
+			compileClasspath += sourceSets.main.output
+			compileClasspath += project(':Commons').sourceSets.main.output
+			compileClasspath += project(':Commons').sourceSets.test.output
+		}
+	}
+}
+
+executeTestNG {
+	classpath += configurations.agentProd
+	classpath += configurations.agentTest
+	classpath += configurations.commonsProd
+	classpath += files(project(':Commons').sourceSets.main.output)
+	classpath += files(project(':Agent').sourceSets.main.java.srcDirs)
+	classpath += files(project(':Agent').sourceSets.test.java.srcDirs)
+	classpath += files(project(':Agent').sourceSets.main.output)
+	classpath += files(project(':Agent').sourceSets.test.output)
+}
+
+compileJava {
+	sourceCompatibility = '1.5'
+	targetCompatibility = '1.5'
+
+	options.bootClasspath = "${java15RuntimePath}/rt.jar"
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+	
+compileTestJava {
+	sourceCompatibility = '1.5'
+	targetCompatibility = '1.5'
+	
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+
+//RELEASE TARGETS
+
+jar {
+	//name and dir of jar
+	libsDirName = 'release'
+	archivesBaseName = "${distJarName}"
+	//add dependencies
+	into('lib') {
+		from project(':Commons').jar.outputs
+		from configurations.agentProd
+		from configurations.commonsProd
+	}
+	//add specific manifest
+	manifest {
+		from file("${mainResources}/META-INF/MANIFEST.MF")
+	}
+}
+
+task packageSun15(type: Zip, dependsOn: jar) {
+	destinationDir = file("${buildReleaseRoot}")
+	archiveName = "${releaseNameSun15}"
+	into('agent') {
+		from jar.outputs
+		from file("${mainExtResources}")
+		from file("${sharedResourcesLicense}")
+	}
+}
+//QA Targets
+
+//don't get the functional difference between cpd{} and cpdCheck{}
+//somehow those tasks/configuration overwrite each other
+cpdCheck {
+	source = sourceSets.main.allJava
+	ignoreFailures = true
+	reports {
+		xml {
+			enabled = true
+			destination = file("${buildQAAnalysisCPD}/main.xml")
+		}
+	}
+}
+
+//somehow i would like to outsource this to the subprojects of the inspectIT.gradle
+//but if i do so the coverageReportDir will set to default
+//i think i has something to do with the baseDir property which is not created dynamically
+// configuriation of corbertura
+cobertura {
+	//instrumatation
+	coverageInputDatafile = file("${buildQATestCoveragedata}/coberturaIn.ser")
+	
+	coverageDirs = ["${buildInstrumentedClasses}"] 
+	coverageIncludes = ['info.novatec.inspectit.*']
+	coverageExcludes = ['info.novatec.inspectit.*.test.*', 'info.novatec.inspectit.*.*_Stub.*']
+	auxiliaryClasspath += files("${buildInstrumentedClasses}")
+	auxiliaryClasspath += configurations.commonsProd
+	
+	//reporting
+	coverageOutputDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDir = file("${buildQATestCoveragedata}")
+	coverageFormats = ['xml', 'html']	
+}
+
+task agentRelease {
+	dependsOn(packageSun15, build)
+}
+
+task agentAnalyze {
+	dependsOn(':Agent:coberturaCheck', ':Agent:executeTestNG', ':Agent:pmdMain', ':Agent:checkstyleMain', ':Agent:findbugsMain', ':Agent:cpdCheck',':Agent:cpdHtmlReport')
+}
+
+task agentReleaseAndAnalyze {
+	dependsOn(agentRelease, agentAnalyze)
+	agentRelease.mustRunAfter(agentAnalyze)
+}

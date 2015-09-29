@@ -1,0 +1,289 @@
+2016-01-21 17:49:42,169: Health Service active...
+2016-01-21 17:49:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.33
+2016-01-21 17:49:43,244: +-CPU load---------------------+
+2016-01-21 17:49:43,244: +/                             +
+2016-01-21 17:49:43,244: +------------------------------+
+2016-01-21 17:49:43,244: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 8986 ms
+2016-01-21 17:49:43,244: Heap: init = 1073741824(1048576K) used = 233769856(228290K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:49:43,244: +-Heap-------------------------+
+2016-01-21 17:49:43,244: +///////                       |
+2016-01-21 17:49:43,245: +------------------------------+
+2016-01-21 17:49:43,245: Non Heap: init = 136773632(133568K) used = 56635128(55307K) committed = 138608640(135360K) max = 184549376(180224K)
+2016-01-21 17:49:43,245: +-Non-Heap---------------------+
+2016-01-21 17:49:43,245: +/////////              |      +
+2016-01-21 17:49:43,245: +------------------------------+
+2016-01-21 17:49:43,245: Pending finalizations: 0
+2016-01-21 17:49:43,245: Threads: 27 total started: 32
+2016-01-21 17:49:43,245: 
+
+2016-01-21 17:49:43,245: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:49:43,246: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:49:43,246: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:49:43,246: -Elements added: 0
+2016-01-21 17:49:43,246: -Elements analyzed: 0
+2016-01-21 17:49:43,246: -Elements indexed: 0
+2016-01-21 17:49:43,246: -Elements evicted: 0
+2016-01-21 17:49:43,246: +-Buffer-----------------------+
+2016-01-21 17:49:43,246: +                              +
+2016-01-21 17:49:43,246: +------------------------------+
+2016-01-21 17:49:43,246: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:49:43,246: Status of each writable storage and its executor service:
+2016-01-21 17:49:43,246: No active writable storage available.
+2016-01-21 17:49:43,246: Recording is not active.
+2016-01-21 17:49:43,246: Byte buffer provider has 0 available buffers in the pool with total capacity of 0 bytes. Total created capacity of the pool is 0 bytes.
+2016-01-21 17:50:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.12
+2016-01-21 17:50:43,244: +-CPU load---------------------+
+2016-01-21 17:50:43,244: +                              +
+2016-01-21 17:50:43,244: +------------------------------+
+2016-01-21 17:50:43,245: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 68987 ms
+2016-01-21 17:50:43,245: Heap: init = 1073741824(1048576K) used = 241823328(236155K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:50:43,245: +-Heap-------------------------+
+2016-01-21 17:50:43,245: +///////                       |
+2016-01-21 17:50:43,245: +------------------------------+
+2016-01-21 17:50:43,245: Non Heap: init = 136773632(133568K) used = 56901528(55567K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:50:43,245: +-Non-Heap---------------------+
+2016-01-21 17:50:43,245: +/////////              |      +
+2016-01-21 17:50:43,245: +------------------------------+
+2016-01-21 17:50:43,245: Pending finalizations: 0
+2016-01-21 17:50:43,246: Threads: 27 total started: 33
+2016-01-21 17:50:43,246: 
+
+2016-01-21 17:50:43,246: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:50:43,247: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:50:43,247: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:50:43,247: -Elements added: 0
+2016-01-21 17:50:43,247: -Elements analyzed: 0
+2016-01-21 17:50:43,247: -Elements indexed: 0
+2016-01-21 17:50:43,247: -Elements evicted: 0
+2016-01-21 17:50:43,247: +-Buffer-----------------------+
+2016-01-21 17:50:43,247: +                              +
+2016-01-21 17:50:43,247: +------------------------------+
+2016-01-21 17:50:43,247: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:50:43,247: Status of each writable storage and its executor service:
+2016-01-21 17:50:43,247: No active writable storage available.
+2016-01-21 17:50:43,247: Recording is not active.
+2016-01-21 17:50:43,248: Byte buffer provider has 0 available buffers in the pool with total capacity of 0 bytes. Total created capacity of the pool is 0 bytes.
+2016-01-21 17:51:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.71
+2016-01-21 17:51:43,244: +-CPU load---------------------+
+2016-01-21 17:51:43,244: +///                           +
+2016-01-21 17:51:43,245: +------------------------------+
+2016-01-21 17:51:43,245: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 128987 ms
+2016-01-21 17:51:43,245: Heap: init = 1073741824(1048576K) used = 241823328(236155K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:51:43,245: +-Heap-------------------------+
+2016-01-21 17:51:43,245: +///////                       |
+2016-01-21 17:51:43,245: +------------------------------+
+2016-01-21 17:51:43,246: Non Heap: init = 136773632(133568K) used = 56906776(55573K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:51:43,246: +-Non-Heap---------------------+
+2016-01-21 17:51:43,246: +/////////              |      +
+2016-01-21 17:51:43,246: +------------------------------+
+2016-01-21 17:51:43,246: Pending finalizations: 0
+2016-01-21 17:51:43,246: Threads: 27 total started: 33
+2016-01-21 17:51:43,246: 
+
+2016-01-21 17:51:43,246: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:51:43,247: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:51:43,247: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:51:43,247: -Elements added: 0
+2016-01-21 17:51:43,247: -Elements analyzed: 0
+2016-01-21 17:51:43,247: -Elements indexed: 0
+2016-01-21 17:51:43,247: -Elements evicted: 0
+2016-01-21 17:51:43,247: +-Buffer-----------------------+
+2016-01-21 17:51:43,247: +                              +
+2016-01-21 17:51:43,247: +------------------------------+
+2016-01-21 17:51:43,247: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:51:43,247: Status of each writable storage and its executor service:
+2016-01-21 17:51:43,247: No active writable storage available.
+2016-01-21 17:51:43,247: Recording is not active.
+2016-01-21 17:51:43,247: Byte buffer provider has 0 available buffers in the pool with total capacity of 0 bytes. Total created capacity of the pool is 0 bytes.
+2016-01-21 17:52:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.85
+2016-01-21 17:52:43,244: +-CPU load---------------------+
+2016-01-21 17:52:43,244: +///                           +
+2016-01-21 17:52:43,244: +------------------------------+
+2016-01-21 17:52:43,244: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 188986 ms
+2016-01-21 17:52:43,244: Heap: init = 1073741824(1048576K) used = 265273112(259055K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:52:43,244: +-Heap-------------------------+
+2016-01-21 17:52:43,244: +////////                      |
+2016-01-21 17:52:43,244: +------------------------------+
+2016-01-21 17:52:43,244: Non Heap: init = 136773632(133568K) used = 57687928(56335K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:52:43,244: +-Non-Heap---------------------+
+2016-01-21 17:52:43,244: +/////////              |      +
+2016-01-21 17:52:43,244: +------------------------------+
+2016-01-21 17:52:43,244: Pending finalizations: 0
+2016-01-21 17:52:43,244: Threads: 32 total started: 38
+2016-01-21 17:52:43,244: 
+
+2016-01-21 17:52:43,244: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:52:43,245: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:52:43,245: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:52:43,245: -Elements added: 0
+2016-01-21 17:52:43,245: -Elements analyzed: 0
+2016-01-21 17:52:43,245: -Elements indexed: 0
+2016-01-21 17:52:43,245: -Elements evicted: 0
+2016-01-21 17:52:43,245: +-Buffer-----------------------+
+2016-01-21 17:52:43,245: +                              +
+2016-01-21 17:52:43,245: +------------------------------+
+2016-01-21 17:52:43,245: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:52:43,245: Status of each writable storage and its executor service:
+2016-01-21 17:52:43,245: No active writable storage available.
+2016-01-21 17:52:43,245: Recording is not active.
+2016-01-21 17:52:43,245: Byte buffer provider has 1 available buffers in the pool with total capacity of 1048576 bytes. Total created capacity of the pool is 3145728 bytes.
+2016-01-21 17:53:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.42
+2016-01-21 17:53:43,244: +-CPU load---------------------+
+2016-01-21 17:53:43,244: +//                            +
+2016-01-21 17:53:43,244: +------------------------------+
+2016-01-21 17:53:43,245: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 248987 ms
+2016-01-21 17:53:43,245: Heap: init = 1073741824(1048576K) used = 269302248(262990K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:53:43,245: +-Heap-------------------------+
+2016-01-21 17:53:43,245: +////////                      |
+2016-01-21 17:53:43,245: +------------------------------+
+2016-01-21 17:53:43,245: Non Heap: init = 136773632(133568K) used = 57766568(56412K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:53:43,245: +-Non-Heap---------------------+
+2016-01-21 17:53:43,245: +/////////              |      +
+2016-01-21 17:53:43,246: +------------------------------+
+2016-01-21 17:53:43,246: Pending finalizations: 0
+2016-01-21 17:53:43,246: Threads: 32 total started: 38
+2016-01-21 17:53:43,246: 
+
+2016-01-21 17:53:43,246: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:53:43,247: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:53:43,247: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:53:43,247: -Elements added: 0
+2016-01-21 17:53:43,247: -Elements analyzed: 0
+2016-01-21 17:53:43,247: -Elements indexed: 0
+2016-01-21 17:53:43,247: -Elements evicted: 0
+2016-01-21 17:53:43,247: +-Buffer-----------------------+
+2016-01-21 17:53:43,247: +                              +
+2016-01-21 17:53:43,247: +------------------------------+
+2016-01-21 17:53:43,247: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:53:43,247: Status of each writable storage and its executor service:
+2016-01-21 17:53:43,248: No active writable storage available.
+2016-01-21 17:53:43,248: Recording is not active.
+2016-01-21 17:53:43,248: Byte buffer provider has 1 available buffers in the pool with total capacity of 1048576 bytes. Total created capacity of the pool is 3145728 bytes.
+2016-01-21 17:54:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.26
+2016-01-21 17:54:43,244: +-CPU load---------------------+
+2016-01-21 17:54:43,244: +/                             +
+2016-01-21 17:54:43,244: +------------------------------+
+2016-01-21 17:54:43,244: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 308986 ms
+2016-01-21 17:54:43,244: Heap: init = 1073741824(1048576K) used = 270647480(264304K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:54:43,244: +-Heap-------------------------+
+2016-01-21 17:54:43,245: +////////                      |
+2016-01-21 17:54:43,245: +------------------------------+
+2016-01-21 17:54:43,245: Non Heap: init = 136773632(133568K) used = 57775296(56421K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:54:43,245: +-Non-Heap---------------------+
+2016-01-21 17:54:43,245: +/////////              |      +
+2016-01-21 17:54:43,245: +------------------------------+
+2016-01-21 17:54:43,245: Pending finalizations: 0
+2016-01-21 17:54:43,245: Threads: 32 total started: 38
+2016-01-21 17:54:43,245: 
+
+2016-01-21 17:54:43,245: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:54:43,245: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:54:43,245: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:54:43,245: -Elements added: 0
+2016-01-21 17:54:43,246: -Elements analyzed: 0
+2016-01-21 17:54:43,246: -Elements indexed: 0
+2016-01-21 17:54:43,246: -Elements evicted: 0
+2016-01-21 17:54:43,246: +-Buffer-----------------------+
+2016-01-21 17:54:43,246: +                              +
+2016-01-21 17:54:43,246: +------------------------------+
+2016-01-21 17:54:43,246: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:54:43,246: Status of each writable storage and its executor service:
+2016-01-21 17:54:43,246: No active writable storage available.
+2016-01-21 17:54:43,246: Recording is not active.
+2016-01-21 17:54:43,246: Byte buffer provider has 1 available buffers in the pool with total capacity of 1048576 bytes. Total created capacity of the pool is 3145728 bytes.
+2016-01-21 17:55:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.1
+2016-01-21 17:55:43,244: +-CPU load---------------------+
+2016-01-21 17:55:43,244: +                              +
+2016-01-21 17:55:43,244: +------------------------------+
+2016-01-21 17:55:43,245: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 368987 ms
+2016-01-21 17:55:43,245: Heap: init = 1073741824(1048576K) used = 271991856(265617K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:55:43,245: +-Heap-------------------------+
+2016-01-21 17:55:43,245: +////////                      |
+2016-01-21 17:55:43,245: +------------------------------+
+2016-01-21 17:55:43,245: Non Heap: init = 136773632(133568K) used = 57739960(56386K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:55:43,245: +-Non-Heap---------------------+
+2016-01-21 17:55:43,246: +/////////              |      +
+2016-01-21 17:55:43,246: +------------------------------+
+2016-01-21 17:55:43,246: Pending finalizations: 0
+2016-01-21 17:55:43,246: Threads: 32 total started: 38
+2016-01-21 17:55:43,246: 
+
+2016-01-21 17:55:43,246: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:55:43,247: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:55:43,247: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:55:43,247: -Elements added: 0
+2016-01-21 17:55:43,247: -Elements analyzed: 0
+2016-01-21 17:55:43,247: -Elements indexed: 0
+2016-01-21 17:55:43,247: -Elements evicted: 0
+2016-01-21 17:55:43,247: +-Buffer-----------------------+
+2016-01-21 17:55:43,247: +                              +
+2016-01-21 17:55:43,247: +------------------------------+
+2016-01-21 17:55:43,248: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:55:43,248: Status of each writable storage and its executor service:
+2016-01-21 17:55:43,248: No active writable storage available.
+2016-01-21 17:55:43,248: Recording is not active.
+2016-01-21 17:55:43,248: Byte buffer provider has 1 available buffers in the pool with total capacity of 1048576 bytes. Total created capacity of the pool is 3145728 bytes.
+2016-01-21 17:56:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.13
+2016-01-21 17:56:43,244: +-CPU load---------------------+
+2016-01-21 17:56:43,244: +                              +
+2016-01-21 17:56:43,244: +------------------------------+
+2016-01-21 17:56:43,245: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 428987 ms
+2016-01-21 17:56:43,245: Heap: init = 1073741824(1048576K) used = 278257656(271735K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:56:43,245: +-Heap-------------------------+
+2016-01-21 17:56:43,245: +////////                      |
+2016-01-21 17:56:43,245: +------------------------------+
+2016-01-21 17:56:43,245: Non Heap: init = 136773632(133568K) used = 57804408(56449K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:56:43,245: +-Non-Heap---------------------+
+2016-01-21 17:56:43,245: +/////////              |      +
+2016-01-21 17:56:43,245: +------------------------------+
+2016-01-21 17:56:43,245: Pending finalizations: 0
+2016-01-21 17:56:43,245: Threads: 32 total started: 38
+2016-01-21 17:56:43,246: 
+
+2016-01-21 17:56:43,246: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:56:43,246: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:56:43,247: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:56:43,247: -Elements added: 0
+2016-01-21 17:56:43,247: -Elements analyzed: 0
+2016-01-21 17:56:43,247: -Elements indexed: 0
+2016-01-21 17:56:43,247: -Elements evicted: 0
+2016-01-21 17:56:43,247: +-Buffer-----------------------+
+2016-01-21 17:56:43,247: +                              +
+2016-01-21 17:56:43,247: +------------------------------+
+2016-01-21 17:56:43,247: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:56:43,247: Status of each writable storage and its executor service:
+2016-01-21 17:56:43,247: No active writable storage available.
+2016-01-21 17:56:43,247: Recording is not active.
+2016-01-21 17:56:43,247: Byte buffer provider has 1 available buffers in the pool with total capacity of 1048576 bytes. Total created capacity of the pool is 3145728 bytes.
+2016-01-21 17:57:43,244: System: Linux 3.16.0-59-generic amd64 (8 cpu(s) load average: 0.11
+2016-01-21 17:57:43,244: +-CPU load---------------------+
+2016-01-21 17:57:43,244: +                              +
+2016-01-21 17:57:43,244: +------------------------------+
+2016-01-21 17:57:43,244: VM: OpenJDK 64-Bit Server VM (Oracle Corporation) process: 14337@rk uptime: 488986 ms
+2016-01-21 17:57:43,244: Heap: init = 1073741824(1048576K) used = 278258384(271736K) committed = 1006632960(983040K) max = 1006632960(983040K)
+2016-01-21 17:57:43,244: +-Heap-------------------------+
+2016-01-21 17:57:43,244: +////////                      |
+2016-01-21 17:57:43,244: +------------------------------+
+2016-01-21 17:57:43,244: Non Heap: init = 136773632(133568K) used = 57814408(56459K) committed = 139001856(135744K) max = 184549376(180224K)
+2016-01-21 17:57:43,244: +-Non-Heap---------------------+
+2016-01-21 17:57:43,244: +/////////              |      +
+2016-01-21 17:57:43,244: +------------------------------+
+2016-01-21 17:57:43,244: Pending finalizations: 0
+2016-01-21 17:57:43,244: Threads: 32 total started: 38
+2016-01-21 17:57:43,244: 
+
+2016-01-21 17:57:43,244: Dropped elements due to the high load on the CMR (total count): 0
+2016-01-21 17:57:43,245: The buffer occupancy status: 0 bytes occupied from total 351.030.976 bytes available (0%).
+2016-01-21 17:57:43,245: Elements processed in the buffer since last clear buffer:
+2016-01-21 17:57:43,245: -Elements added: 0
+2016-01-21 17:57:43,245: -Elements analyzed: 0
+2016-01-21 17:57:43,245: -Elements indexed: 0
+2016-01-21 17:57:43,245: -Elements evicted: 0
+2016-01-21 17:57:43,245: +-Buffer-----------------------+
+2016-01-21 17:57:43,245: +                              +
+2016-01-21 17:57:43,245: +------------------------------+
+2016-01-21 17:57:43,245: Status of the Write Channel Manager's executor service: java.util.concurrent.ThreadPoolExecutor@7c6ce4da[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2016-01-21 17:57:43,245: Status of each writable storage and its executor service:
+2016-01-21 17:57:43,245: No active writable storage available.
+2016-01-21 17:57:43,245: Recording is not active.
+2016-01-21 17:57:43,245: Byte buffer provider has 3 available buffers in the pool with total capacity of 3145728 bytes. Total created capacity of the pool is 3145728 bytes.

@@ -1,0 +1,39 @@
+OpenJDK 64-Bit Server VM (24.91-b01) for linux-amd64 JRE (1.7.0_91-b02), built on Nov 19 2015 06:14:37 by "buildd" with gcc 4.8.2
+Memory: 4k page, physical 16313124k(1872180k free), swap 2931708k(2931400k free)
+CommandLine flags: -XX:BiasedLockingStartupDelay=500 -XX:CMSInitiatingOccupancyFraction=80 -XX:+CMSParallelRemarkEnabled -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:InitialHeapSize=1073741824 -XX:MaxHeapSize=1073741824 -XX:MaxNewSize=402653184 -XX:MaxPermSize=134217728 -XX:NewSize=402653184 -XX:OldPLABSize=16 -XX:PermSize=134217728 -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90 -XX:+UseBiasedLocking -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:+UseFastAccessorMethods -XX:+UseParNewGC 
+2,334: [GC2,334: [ParNew
+Desired survivor size 60397976 bytes, new threshold 15 (max 15)
+- age   1:   21132552 bytes,   21132552 total
+: 262144K->20709K(327680K), 0,0220760 secs] 262144K->20709K(983040K), 0,0221630 secs] [Times: user=0,06 sys=0,03, real=0,02 secs] 
+5,776: [GC5,776: [ParNew
+Desired survivor size 60397976 bytes, new threshold 15 (max 15)
+- age   1:   21388112 bytes,   21388112 total
+- age   2:    6727976 bytes,   28116088 total
+: 282853K->32671K(327680K), 0,0330630 secs] 282853K->32671K(983040K), 0,0331210 secs] [Times: user=0,17 sys=0,01, real=0,03 secs] 
+6,197: [GC6,197: [ParNew
+Desired survivor size 60397976 bytes, new threshold 15 (max 15)
+- age   1:   21272512 bytes,   21272512 total
+- age   2:   11799320 bytes,   33071832 total
+- age   3:    6722576 bytes,   39794408 total
+: 294815K->44329K(327680K), 0,0216060 secs] 294815K->44329K(983040K), 0,0216900 secs] [Times: user=0,14 sys=0,02, real=0,02 secs] 
+6,606: [GC6,606: [ParNew
+Desired survivor size 60397976 bytes, new threshold 4 (max 15)
+- age   1:   22550672 bytes,   22550672 total
+- age   2:   20326512 bytes,   42877184 total
+- age   3:   11506952 bytes,   54384136 total
+- age   4:    6718528 bytes,   61102664 total
+: 306473K->65536K(327680K), 0,0217540 secs] 306473K->66956K(983040K), 0,0218130 secs] [Times: user=0,14 sys=0,01, real=0,02 secs] 
+8,134: [GC8,134: [ParNew
+Desired survivor size 60397976 bytes, new threshold 15 (max 15)
+- age   1:    7360592 bytes,    7360592 total
+- age   2:   21874480 bytes,   29235072 total
+- age   3:   19017856 bytes,   48252928 total
+- age   4:   11215376 bytes,   59468304 total
+: 327680K->65536K(327680K), 0,0677600 secs] 329100K->85962K(983040K), 0,0678240 secs] [Times: user=0,25 sys=0,02, real=0,07 secs] 
+Heap
+ par new generation   total 327680K, used 264417K [0x00000000b8000000, 0x00000000d0000000, 0x00000000d0000000)
+  eden space 262144K,  75% used [0x00000000b8000000, 0x00000000c42385b8, 0x00000000c8000000)
+  from space 65536K, 100% used [0x00000000cc000000, 0x00000000d0000000, 0x00000000d0000000)
+  to   space 65536K,   0% used [0x00000000c8000000, 0x00000000c8000000, 0x00000000cc000000)
+ concurrent mark-sweep generation total 655360K, used 20426K [0x00000000d0000000, 0x00000000f8000000, 0x00000000f8000000)
+ concurrent-mark-sweep perm gen total 131072K, used 52027K [0x00000000f8000000, 0x0000000100000000, 0x0000000100000000)

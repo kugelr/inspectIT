@@ -32,23 +32,23 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
+		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
-		<nature>org.apache.ivyde.eclipse.ivynature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>shared</name>
+			<name>META-INF</name>
 			<type>2</type>
-			<locationURI>shared</locationURI>
+			<locationURI>metainf</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
-			<name>shared</name>
-			<value>$%7BPARENT-1-PROJECT_LOC%7D/Commons/resources/shared</value>
+			<name>metainf</name>
+			<value>$%7BPROJECT_LOC%7D/src/main/resources/META-INF</value>
 		</variable>
 	</variableList>
 </projectDescription>

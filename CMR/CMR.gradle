@@ -1,0 +1,322 @@
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'de.aaschmid.cpd'
+apply from: 'PropertiesCMR.gradle'
+defaultTasks "cmrReleaseAndAnalyze"
+
+//some CMR specific properties
+ext {
+	distJarName = "inspectit-cmr"
+	moduleVersionTarget = "0.1"	
+	buildReleaseRootCMR = "${buildReleaseRoot}/CMR"
+}
+
+configurations {
+	compile {
+		extendsFrom configurations.cmrProd
+		extendsFrom configurations.cmrTest
+		extendsFrom configurations.cmrPerf
+		extendsFrom configurations.classmexer
+	}
+}
+
+//specific configuration of the sourceSets
+sourceSets {
+	main {
+		java {
+			compileClasspath = configurations.cmrProd
+			compileClasspath += configurations.commonsProd
+			compileClasspath += configurations.commonsCSProd
+			//is this correct or is there something with classes?
+			compileClasspath += project(':Commons').sourceSets.main.output
+			compileClasspath += project(':CommonsCS').sourceSets.main.output
+		}
+	}
+	test {
+		java {
+			compileClasspath = configurations.cmrProd
+			compileClasspath += configurations.cmrTest
+			compileClasspath += configurations.commonsProd
+			compileClasspath += configurations.commonsCSProd
+			compileClasspath += sourceSets.main.output
+			compileClasspath += files(project(':Commons').jar.outputs)
+			compileClasspath += files(project(':CommonsCS').jar.outputs)
+		}
+	}
+	perf {
+		java {
+			srcDir 'src/perf'
+			compileClasspath = configurations.cmrProd
+			compileClasspath += configurations.cmrTest
+			compileClasspath += configurations.commonsProd
+			compileClasspath += configurations.commonsCSProd
+			compileClasspath += sourceSets.main.output
+			compileClasspath += files(project(':Commons').jar.outputs)
+			compileClasspath += files(project(':CommonsCS').jar.outputs)
+		}
+	}
+}
+
+//writing the absolute path of the classmexer.jar into a property
+//this property is used in the executeTestNG task to start the jvm
+ext.classmexerPath = configurations.classmexer.asPath
+
+executeTestNG {
+	//I think not all of these are needed
+	//TODO: check which one are really needed in the classpath
+	//and remove unnecessery entries
+	classpath += configurations.cmrProd
+	classpath += configurations.cmrTest
+	classpath += project(':Commons').configurations.compile
+	classpath += project(':CommonsCS').configurations.compile
+	classpath += files("test/resources")
+	classpath += files(project(':Commons').jar.outputs)
+	classpath += files(project(':CommonsCS').jar.outputs)
+	classpath += files(project(':CMR').sourceSets.main.java.srcDirs)
+	classpath += files(project(':CMR').sourceSets.test.java.srcDirs)
+	classpath += files(project(':CMR').sourceSets.main.output)
+	classpath += files(project(':CMR').sourceSets.test.output)
+	
+	workingDir = file("${mainExtResources}")
+
+	jvmArgs = ["-XX:-UseSplitVerifier","-javaagent:${classmexerPath}"]
+	jvmArgs += cmrJavaOptsForTests
+}
+
+//I think this is somehow redundant
+//Thinking about to configure it once for both tasks
+compileJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debugOptions.debugLevel = "source,lines,vars"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+	
+compileTestJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+	
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+
+//RELEASE TARGETS
+
+//prepare CMR for packaging
+task copyCMRResources(type: Copy) {
+	into("libs") {
+		from project(':Commons').jar.outputs
+		from project(':CommonsCS').jar.outputs
+		from configurations.cmrProd
+		from project(':Commons').configurations.compile
+		from project(':CommonsCS').configurations.compile
+	}
+	into("config") {
+		from file("config")
+	}
+	into("logs") {
+		from file("logs")
+	}
+	from file("logging-config.xml")
+	
+	destinationDir = file("${buildReleaseRootCMR}")
+
+}
+
+//package the CMR
+jar {
+	//prepare manifest during runtime because the libs folder has to be created first(-> copyCMRResources)
+	doFirst {
+		ext.manifestLibs = fileTree(dir:"${buildReleaseRootCMR}/libs", include: "**/*.jar").files.collect{'libs/' + it.name}.iterator().join(' ')
+		manifest {
+			attributes(
+				"Main-Class": "info.novatec.inspectit.cmr.CMR",
+				"Class-Path": manifestLibs
+				)
+		}
+	}
+	dependsOn(copyCMRResources)
+	libsDirName = "${buildReleaseRootCMR}"
+	archivesBaseName = "${distJarName}"
+}
+
+//dynamic packaging for the CMR
+//i know this looks confusing. i try to explain
+//Steps:
+//	 Iterate over the list in the property "jvmListPackage"(example entry: 'jre7-linux-x64'). For every entry do:
+//		1. get operating system and write it to variable 'os'
+//		2. get operating system architecture and write it to variable 'arc'
+//		3. compose 'osArc' variable out of (suprise) 'os' and 'arc'
+//		4. compose 'command' variable with relevant properties based on 'os' and 'arc'
+//		5. create the follwing tasks and feed them with information about 'os' and 'arc'(tasks only being created and not executed at this point)
+//			5.1. copyOsSpecificFiles: copies the os-based startup-script and replaces '#COMMAND#' with the 'command' variable
+//			5.2. unzipOsSpecificJre: takes a downloaded JRE zip file and unzips it based on the 'os' and 'arc'
+//			5.3. deleteExpandedArchive: this deletes the tmp folder which is created by gradle. This is a ugly workaround. see *1 at the end of this comment
+//			5.4. packageCMR: packages the CMR. takes the 'os' and 'arc' refering JRE and startup script and packs it together with the common CMR files
+//		6. Execute the tasks from step 5
+//
+// *1: if the tmp folder already exists gradle tries to overwrite it. but somehow i don't have write access on some files.
+//     tried it already with the property 'fileMode 755'. Already talked with Nicolay about it. We think it has something to do
+//     with the dynamic creation of the task and that the the 'fileMode' property is usally evaluated at the gradle configuration
+//     time. but at the configuration time of gradle the file on which fileMode is applied doesn't exist. it is created by the 
+//     copyOsSpecificFiles task. 
+ext.os = ""
+ext.arc = ""
+ext.osArc = ""
+ext.command = ""
+task packageJVM(dependsOn: rootProject.downloadJVM) {
+	jvmListPackage.each { jvm ->
+		//read operating system (1)
+		if("${jvm}".contains('windows')) {
+			os = 'windows'
+		}
+		else if("${jvm}".contains('linux')) {
+			os = 'linux'
+		}
+		//read operating system architecture (2)
+		if("${jvm}".contains('x86')) {
+			arc = 'x86'
+		}
+		else if("${jvm}".contains('x64')) {
+			arc = 'x64'
+		}
+		// (3)
+		osArc = os + arc 
+		//set set the certain startup command (4)
+		if(os == 'windows') {
+			if(arc == 'x86') {
+				command = "${cmrJavaCommandWin} ${cmrJavaMemory32bit} ${cmrJavaOpts32bit} ${cmrJavaOptsWin} ${cmrJavaLocgcWin} -jar ${distJarName}.jar"
+			}
+			else if (arc == 'x64'){
+				command = "${cmrJavaCommandWin} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsWin} ${cmrJavaLocgcWin} -jar ${distJarName}.jar"
+			}
+			//create task for certain os&arc (5)
+			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.bat', "${command}", "${name}")
+			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
+			deleteExpandedArchive()
+			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.bat", jvm, "zip", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")
+		}
+		else if (os == 'linux') {
+			if(arc == 'x86') {
+				command = "${cmrJavaCommandLinux} ${cmrJavaMemory32bit} ${cmrJavaOpts32bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
+			}
+			else if (arc == 'x64'){
+				command = "${cmrJavaCommandLinux} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
+			}
+			//create task for certain os&arc (5)
+			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.sh', "${command}", "${name}")
+			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
+			deleteExpandedArchive()
+			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.sh", jvm, "tar.gz", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")	
+		}
+		//execute certain task (6)
+		packageJVM.finalizedBy "copySpecificFilesFor${osArc}"
+		packageJVM.finalizedBy "unzipSpecificJreFor${osArc}"
+		packageJVM.finalizedBy "deleteExpandedArchives${osArc}"
+		packageJVM.finalizedBy "packageCMRFor${osArc}"
+	}
+}
+
+
+//dynamic tasks: described in the comment of the packageJVM task
+def copyOsSpecificFiles(fromDir, toDir, fileName, command, dependsOn) {
+    return tasks.create("copySpecificFilesFor${osArc}", Copy) {
+        from fromDir
+        into toDir 
+        include fileName 
+       	filter{
+        	String line -> line.replaceAll('#COMMAND#', command)
+        }	
+    }
+}
+
+def deleteExpandedArchive() {
+	return tasks.create("deleteExpandedArchives${osArc}", Delete) {
+		delete "build/tmp/expandedArchives"
+	}
+}
+
+def unzipOsSpecificJre(toDir, jvm) {
+	return tasks.create("unzipSpecificJreFor${osArc}", Copy) {
+		dependsOn rootProject.downloadJVM 
+		finalizedBy "deleteExpandedArchives${osArc}"
+		from(zipTree(file("${jvmRoot}/${jvm}.zip")))
+		into "${toDir}/jre"
+		destinationDir = file("${toDir}/jre")
+	}
+}
+
+def packageCMR(startupFile, jvm, fileExtension, jre) {
+	return tasks.create("packageCMRFor${osArc}", Zip) {
+		dependsOn "unzipSpecificJreFor${osArc}"
+		destinationDir = file("${buildReleaseRoot}/packages")
+		archiveName = "inspectit-cmr.${os}.${arc}.${fileExtension}"
+		into("CMR") {
+			from file("${buildReleaseRoot}/CMR")
+			from startupFile
+			from files(sharedResourcesLicense)
+		}
+		into("CMR/jre"){
+			from file("${jre}")
+		}
+		
+	}
+}
+
+
+//QA Targets
+
+
+//don't get the functional difference between cpd{} and cpdCheck{}
+//somehow those tasks/configuration overwrite each other
+cpdCheck {
+	source = sourceSets.main.allJava
+	ignoreFailures = true
+	reports {
+		xml {
+			enabled = true
+			destination = file("${buildQAAnalysisCPD}/main.xml")
+		}
+	}
+}
+
+//somehow i would like to outsource this to the subprojects of the inspectIT.gradle
+//but if i do so the coverageReportDir will set to default
+//i think i has something to do with the baseDir property which is not created dynamically
+// configuriation of corbertura
+cobertura {
+	//instrumatation
+	coverageInputDatafile = file("${buildQATestCoveragedata}/coberturaIn.ser")
+	coverageDirs = ["${buildInstrumentedClasses}"] 
+	coverageIncludes = ['info.novatec.inspectit.**']
+	coverageExcludes = ['info.novatec.inspectit.*.test.*', 'info.novatec.inspectit.*.*_Stub.*']
+	auxiliaryClasspath += files("${buildInstrumentedClasses}")
+	auxiliaryClasspath += configurations.commonsProd
+	auxiliaryClasspath += configurations.commonsCSProd
+	auxiliaryClasspath += project(':Commons').sourceSets.main.output
+	auxiliaryClasspath += project(':CommonsCS').sourceSets.main.output
+	
+	//reporting
+	//the OutputFile is automatically added to jvmArgs
+	coverageOutputDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDir = file("${buildQATestCoveragedata}")
+	coverageFormats = ['xml', 'html']	
+}
+
+task cmrRelease {
+	dependsOn(build)
+	dependsOn(packageJVM)
+}
+
+task cmrAnalyze {
+	dependsOn(':CMR:coberturaCheck', ':CMR:executeTestNG', ':CMR:pmdMain', ':CMR:checkstyleMain', ':CMR:findbugsMain', ':CMR:cpdCheck',':CMR:cpdHtmlReport')
+}
+
+task cmrReleaseAndAnalyze {
+	dependsOn(cmrRelease, cmrAnalyze)
+	cmrRelease.mustRunAfter(cmrAnalyze)
+}

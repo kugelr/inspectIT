@@ -1,0 +1,18 @@
+//Different JVM settings
+//Because we use ANt replaceregexp '\' char needs to be represented with 8 times '\'
+ext {
+	cmrJavaCommandLinux = './jre/bin/java'
+	cmrJavaCommandWin = 'jre\\\\bin\\\\java.exe'
+	cmrJavaMemory32bit = '-Xms1024m -Xmx1024m -Xmn384M -XX:MaxPermSize=128m -XX:PermSize=128m'
+	cmrJavaMemory64bit = '-Xms1536m -Xmx1536m -Xmn512M -XX:MaxPermSize=192m -XX:PermSize=128m'
+	cmrJavaOpts32bit = '-XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled -XX:+DisableExplicitGC -XX:SurvivorRatio=4 -XX:TargetSurvivorRatio=90 -XX:BiasedLockingStartupDelay=500 -XX:+UseFastAccessorMethods -XX:+UseBiasedLocking -XX:+HeapDumpOnOutOfMemoryError'
+	cmrJavaOpts64bit = '-XX:+UseConcMarkSweepGC -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly -XX:+UseParNewGC -XX:+CMSParallelRemarkEnabled -XX:+DisableExplicitGC -XX:SurvivorRatio=5 -XX:TargetSurvivorRatio=90 -XX:AutoBoxCacheMax=20000 -XX:BiasedLockingStartupDelay=500 -XX:+UseFPUForSpilling -XX:+UseFastAccessorMethods -XX:+UseBiasedLocking -XX:+UseCompressedOops -XX:+HeapDumpOnOutOfMemoryError'
+	cmrJavaOptsLinux = '-server'
+	cmrJavaOptsWin = ''
+	cmrJavaLocgcLinux = '-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution -Xloggc:logs/gc.log'
+	cmrJavaLocgcWin = '-verbose:gc -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+PrintTenuringDistribution -Xloggc:logs\\\\gc.log'
+	
+	cmrJavaOptsForTests = ['-XX:+UseConcMarkSweepGC', '-XX:CMSInitiatingOccupancyFraction=80', '-XX:+UseCMSInitiatingOccupancyOnly', '-XX:+UseParNewGC', '-XX:+CMSParallelRemarkEnabled', '-XX:+DisableExplicitGC', '-XX:SurvivorRatio=4', '-XX:TargetSurvivorRatio=90', '-XX:BiasedLockingStartupDelay=500', '-XX:+UseFastAccessorMethods', '-XX:+UseBiasedLocking', '-XX:+HeapDumpOnOutOfMemoryError']
+	
+	jvmListPackage = ['jre7-linux-x64', 'jre7-linux-x86', 'jre7-windows-x86', 'jre7-windows-x64']
+}

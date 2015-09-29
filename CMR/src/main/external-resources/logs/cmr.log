@@ -1,0 +1,87 @@
+2016-01-21 17:49:34,554: 237    [           main] INFO  info.novatec.inspectit.cmr.CMR - Central Measurement Repository is starting up!
+2016-01-21 17:49:34,577: 260    [           main] INFO  info.novatec.inspectit.cmr.CMR - ==============================================
+2016-01-21 17:49:34,577: 260    [           main] WARN  info.novatec.inspectit.cmr.CMR - ATTENTION: The version of this JVM (1.7.0_91) is not compatible with the CMR! Please use the JVM that is provided with the installation!
+2016-01-21 17:49:34,592: 275    [           main] INFO  info.novatec.inspectit.cmr.CMR - Initializing Spring...
+2016-01-21 17:49:35,719: 1402   [           main] INFO  t.cmr.property.PropertyManager - |-Loading the default CMR configuration
+2016-01-21 17:49:35,824: 1507   [           main] INFO  t.cmr.property.PropertyManager - |-No CMR Configuration updates found, continuing to use default configuration
+2016-01-21 17:49:35,838: 1521   [           main] INFO  t.cmr.property.PropertyManager - |-CMR Configuration verified with no errors
+2016-01-21 17:49:35,861: 1544   [           main] INFO  ring.exporter.RemotingExporter - |-RemoteExporter: Processing Beans for remote export
+2016-01-21 17:49:41,280: 6963   [           main] INFO  mr.cache.impl.BufferProperties - |-Buffer properties initialized with following values:
+2016-01-21 17:49:41,280: 6963   [           main] INFO  mr.cache.impl.BufferProperties - ||-Eviction occupancy percentage: 95%
+2016-01-21 17:49:41,280: 6963   [           main] INFO  mr.cache.impl.BufferProperties - ||-Eviction fragment size percentage: 5%
+2016-01-21 17:49:41,280: 6963   [           main] INFO  mr.cache.impl.BufferProperties - ||-Indexing tree cleaning threads: 1
+2016-01-21 17:49:41,280: 6963   [           main] INFO  mr.cache.impl.BufferProperties - ||-Indexing waiting time: 500 ms
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Min old generation occupancy percentage active till: 402.653.184 bytes
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Max old generation occupancy percentage active from: 2.147.483.648 bytes
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Min old generation occupancy percentage: 50%
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Max old generation occupancy percentage: 65%
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Max object size expansion: 10%
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Min object size expansion: 1%
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Max object size expansion active from buffer occupancy: 75%
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Min object size expansion active till buffer occupancy: 35 %
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Max object size expansion active till buffer size: 209.715.200 bytes
+2016-01-21 17:49:41,281: 6964   [           main] INFO  mr.cache.impl.BufferProperties - ||-Min object size expansion active from buffer size: 1.073.741.824 bytes
+2016-01-21 17:49:41,307: 6990   [           main] INFO  it.cmr.cache.impl.AtomicBuffer - |-Using buffer with maximum size 351.030.976 bytes...
+2016-01-21 17:49:41,307: 6990   [           main] INFO  it.cmr.cache.impl.AtomicBuffer - |-Indexing tree maintenance on 26.327.324 bytes added/removed...
+2016-01-21 17:49:41,307: 6990   [           main] INFO  it.cmr.cache.impl.AtomicBuffer - |-Using object expansion rate of 6,711%
+2016-01-21 17:49:41,347: 7030   [           main] INFO  mr.service.ServerStatusService - |-Server Status Service active...
+2016-01-21 17:49:41,371: 7054   [           main] INFO  izer.schema.ClassSchemaManager - ||-Class Schema Manager started..
+2016-01-21 17:49:41,564: 7247   [           main] INFO  .ConfigurationInterfaceManager - |-Loading the existing Configuration interface profiles..
+2016-01-21 17:49:41,829: 7512   [           main] INFO  .ConfigurationInterfaceManager - |-Loading the existing Configuration interface environments..
+2016-01-21 17:49:41,829: 7512   [           main] INFO  .ConfigurationInterfaceManager - Default configuration interface environment path does not exists. No environment is loaded.
+2016-01-21 17:49:41,829: 7512   [           main] INFO  .ConfigurationInterfaceManager - |-Loading the existing Configuration interface agent mappings..
+2016-01-21 17:49:42,091: 7774   [           main] INFO  ectit.cmr.util.ShutdownService - |-Shutdown Service active...
+2016-01-21 17:49:42,096: 7779   [           main] INFO  r.service.CmrManagementService - |-CMR Management Service active...
+2016-01-21 17:49:42,213: 7896   [           main] INFO  r.service.JmxDataAccessService - |-Jmx Sensor Data Access Service active...
+2016-01-21 17:49:42,221: 7904   [           main] INFO  ervice.GlobalDataAccessService - |-Global Data Access Service active...
+2016-01-21 17:49:42,244: 7927   [           main] INFO  tit.cmr.service.StorageService - |-Storage Service active...
+2016-01-21 17:49:42,269: 7952   [           main] INFO  t.cmr.service.KeepAliveService - |-Keep Alive Service active...
+2016-01-21 17:49:42,276: 7959   [           main] INFO  .ConfigurationInterfaceService - |-Configuration Interface Service active...
+2016-01-21 17:49:42,305: 7988   [           main] INFO  ice.ExceptionDataAccessService - |-Exception Sensor Data Access Service active...
+2016-01-21 17:49:42,320: 8003   [           main] INFO  mr.service.RegistrationService - |-Registration Service active...
+2016-01-21 17:49:42,329: 8012   [           main] INFO  mr.service.AgentStorageService - |-Agent Storage Service active...
+2016-01-21 17:49:42,335: 8018   [           main] INFO  r.service.SqlDataAccessService - |-SQL Data Access Service active...
+2016-01-21 17:49:42,342: 8025   [           main] INFO  ce.InvocationDataAccessService - |-Invocation Data Access Service active...
+2016-01-21 17:49:42,349: 8032   [           main] INFO  ice.HttpTimerDataAccessService - |-Http Timer Data Access Service active...
+2016-01-21 17:49:42,900: 8583   [           main] INFO                               / - Initializing Spring FrameworkServlet 'springDispatcherServletExporter'
+2016-01-21 17:49:43,172: 8855   [           main] INFO  bApplicationContextInitializer - | Jetty Web Application Context started!
+2016-01-21 17:49:43,219: 8902   [           main] INFO  tor$$EnhancerByCGLIB$$122b8576 - |-Kryonet server successfully started and running on port 9070
+2016-01-21 17:49:43,237: 8920   [           main] INFO  rter.KryoNetRmiServiceExporter - |-Service info.novatec.inspectit.cmr.service.IKeepAliveService exported and available via kryonet RMI with the ID 3
+2016-01-21 17:49:43,239: 8922   [           main] INFO  rter.KryoNetRmiServiceExporter - |-Service info.novatec.inspectit.cmr.service.IRegistrationService exported and available via kryonet RMI with the ID 1
+2016-01-21 17:49:43,239: 8922   [           main] INFO  rter.KryoNetRmiServiceExporter - |-Service info.novatec.inspectit.cmr.service.IAgentStorageService exported and available via kryonet RMI with the ID 2
+2016-01-21 17:49:43,245: 8928   [           main] INFO  info.novatec.inspectit.cmr.CMR - Spring successfully initialized
+2016-01-21 17:49:43,246: 8929   [           main] INFO  info.novatec.inspectit.cmr.CMR - Starting CMR in version unknown. Please note that inspectIT does not provide any guarantee on backwards compatibility. Only if the version match exactly we ensure that the components are compatible.
+2016-01-21 17:49:43,246: 8929   [           main] INFO  info.novatec.inspectit.cmr.CMR - CMR started in 8693.658469 ms
+2016-01-21 17:52:24,535: 170218 [ervice-thread-0] INFO  mr.service.RegistrationService - Trying to register Agent 'InspectITTest'
+2016-01-21 17:52:24,541: 170224 [ervice-thread-0] INFO  mr.service.RegistrationService - Successfully registered the Agent 'InspectITTest' with id 1, version unknown and following network interfaces:
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv4: 127.0.0.1
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv4: 172.16.177.6
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv4: 192.168.101.103
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv6: 0:0:0:0:0:0:0:1%1
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:4a51:b7ff:fe87:802%3
+2016-01-21 17:52:24,542: 170225 [ervice-thread-0] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:e67f:b2ff:fe1a:8b36%2
+2016-01-21 17:53:07,856: 213539 [ervice-thread-1] INFO  mr.service.RegistrationService - Trying to unregister the Agent with following network interfaces:
+2016-01-21 17:53:07,856: 213539 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv4: 127.0.0.1
+2016-01-21 17:53:07,856: 213539 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv4: 172.16.177.6
+2016-01-21 17:53:07,856: 213539 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv4: 192.168.101.103
+2016-01-21 17:53:07,857: 213540 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv6: 0:0:0:0:0:0:0:1%1
+2016-01-21 17:53:07,857: 213540 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:4a51:b7ff:fe87:802%3
+2016-01-21 17:53:07,857: 213540 [ervice-thread-1] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:e67f:b2ff:fe1a:8b36%2
+2016-01-21 17:53:07,859: 213542 [ervice-thread-1] INFO  mr.service.RegistrationService - The Agent 'InspectITTest' has been successfully unregistered.
+2016-01-21 17:53:28,566: 234249 [ervice-thread-2] INFO  mr.service.RegistrationService - Trying to register Agent 'InspectITTest'
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - Successfully registered the Agent 'InspectITTest' with id 1, version unknown and following network interfaces:
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 127.0.0.1
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 172.16.177.6
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 192.168.101.103
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: 0:0:0:0:0:0:0:1%1
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:4a51:b7ff:fe87:802%3
+2016-01-21 17:53:28,568: 234251 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:e67f:b2ff:fe1a:8b36%2
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - Trying to unregister the Agent with following network interfaces:
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 127.0.0.1
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 172.16.177.6
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv4: 192.168.101.103
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: 0:0:0:0:0:0:0:1%1
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:4a51:b7ff:fe87:802%3
+2016-01-21 17:56:59,924: 445607 [ervice-thread-2] INFO  mr.service.RegistrationService - |- IPv6: fe80:0:0:0:e67f:b2ff:fe1a:8b36%2
+2016-01-21 17:56:59,925: 445608 [ervice-thread-2] INFO  mr.service.RegistrationService - The Agent 'InspectITTest' has been successfully unregistered.
+2016-01-21 17:57:57,455: 503138 [      Thread-17] INFO                               / - Destroying Spring FrameworkServlet 'springDispatcherServletExporter'

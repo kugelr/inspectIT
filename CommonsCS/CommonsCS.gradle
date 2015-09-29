@@ -1,0 +1,124 @@
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'de.aaschmid.cpd'
+evaluationDependsOn(':Commons')
+defaultTasks "commonsCSReleaseAndAnalyze"
+//defaultTasks "myTask"
+
+//some commonsCS specific properties
+ext {
+	distJarName = "inspectit-commonscs"
+	pluginName = "info.novatec.inspectit.commonscs"
+}
+
+configurations {
+	compile {
+		extendsFrom configurations.commonsCSProd
+		extendsFrom configurations.commonsCSTest
+	}
+}
+
+//specific configuration of the sourceSets
+sourceSets {
+	main {
+		java {
+			compileClasspath = configurations.commonsCSProd
+			compileClasspath += configurations.commonsProd
+			//is this correct or is ther something with classes?
+			compileClasspath += project(':Commons').sourceSets.main.output
+		}
+	}
+	test {
+		java {
+			compileClasspath = configurations.commonsCSProd
+			compileClasspath += configurations.commonsCSTest
+			compileClasspath += configurations.commonsProd
+			compileClasspath += sourceSets.main.output
+			compileClasspath += files(project(':Commons').jar.outputs)
+		}
+	}
+}
+
+executeTestNG {
+	classpath += configurations.commonsCSProd
+	classpath += configurations.commonsCSTest
+	classpath += configurations.commonsProd
+	classpath += files(project(':Commons').jar.outputs)
+	classpath += files(project(':CommonsCS').sourceSets.main.java.srcDirs)
+	classpath += files(project(':CommonsCS').sourceSets.test.java.srcDirs)
+	classpath += files(project(':CommonsCS').sourceSets.main.output)
+	classpath += files(project(':CommonsCS').sourceSets.test.output)
+}
+
+compileJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+
+compileTestJava {
+	sourceCompatibility = '1.7'
+	targetCompatibility = '1.7'
+
+	options.compilerArgs << "-Xlint:unchecked"
+	options.debug = 'true'
+	options.fork = 'true'
+}
+
+//RELEASE TARGETS
+
+jar {
+	//name and dir of jar
+	libsDirName = 'release'
+	archivesBaseName = "${distJarName}"
+}
+
+//don't get the functional difference between cpd{} and cpdCheck{}
+//somehow those tasks/configuration overwrite each other
+cpdCheck {
+	source = sourceSets.main.allJava
+	ignoreFailures = true
+	reports {
+		xml {
+			enabled = true
+			destination = file("${buildQAAnalysisCPD}/main.xml")
+		}
+	}
+}
+
+//somehow i would like to outsource this to the subprojects of the inspectIT.gradle
+//but if i do so the coverageReportDir will set to default
+//i think i has something to do with the baseDir property which is not created dynamically
+// configuriation of corbertura
+cobertura {
+	//instrumatation
+	coverageInputDatafile = file("${buildQATestCoveragedata}/coberturaIn.ser")
+	
+	coverageDirs = ["${buildInstrumentedClasses}"] 
+	coverageIncludes = ['info.novatec.inspectit.**']
+	coverageExcludes = ['info.novatec.inspectit.*.test.*', 'info.novatec.inspectit.*.*_Stub.*']
+	auxiliaryClasspath += files("${buildInstrumentedClasses}")
+	auxiliaryClasspath += configurations.commonsProd
+	
+	//reporting
+	coverageOutputDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	coverageReportDatafile = file("${buildQATestCoveragedata}/coberturaOut.ser")
+	
+	coverageReportDir = file("${buildQATestCoveragedata}")
+	coverageFormats = ['xml', 'html']	
+}
+
+task commonsCSRelease {
+	dependsOn(build)
+}
+
+task commonsCSAnalyze {
+	dependsOn(':CommonsCS:coberturaCheck', ':CommonsCS:executeTestNG', ':CommonsCS:pmdMain', ':CommonsCS:checkstyleMain', ':CommonsCS:findbugsMain', ':CommonsCS:cpdCheck',':CommonsCS:cpdHtmlReport')
+}
+
+task commonsCSReleaseAndAnalyze {
+	dependsOn(commonsCSRelease, commonsCSAnalyze)
+	commonsCSRelease.mustRunAfter(commonsCSAnalyze)
+}

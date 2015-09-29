@@ -1,0 +1,178 @@
+plugins {
+	id 'net.saliman.cobertura' version '2.2.7'
+}
+plugins {
+    id 'de.aaschmid.cpd' version '0.5'
+}
+ext {
+	sharedResources = "$projectDir/shared-resources"
+}
+
+File propertiesFile = file("properties.gradle")
+File dependenciesFile = file("dependencies.gradle")
+
+allprojects {
+	apply plugin: 'java'
+	apply plugin: 'pmd'
+	apply plugin: 'checkstyle'
+	apply plugin: 'findbugs'
+	
+	apply from: file(propertiesFile.absolutePath)
+	apply from: file(dependenciesFile.absolutePath)
+}
+
+/*
+task clean {
+    subprojects.each {
+        it.afterEvaluate {
+            def cleanTask = it.tasks.findByName('clean')
+            if (cleanTask) {
+                dependsOn(cleanTask)
+            }
+        }
+    }
+}*/
+
+task downloadJVM << {
+	//iterating over jvmList - right now it looks like: jvmList = ['jre7-linux-x64', 'jre7-linux-x86', 'jre7-windows-x86', 'jre7-windows-x64']
+	jvmListDownload.each { jvm ->
+		//create a File Object of Path+File I want to download. For example: /home/rk/gradle-project/inspectIT/CMR/src/main/external-resources/jvm/jre7-linux-x64.zip 
+		File jvmFile = new File("${jvmRoot}/${jvm}.zip")
+		//check whether the file is already present
+		if(!jvmFile.exists()){
+			//download the file from the ftp server
+			ant {
+				taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
+				ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJvmInstallations}") {
+					fileset(dir: "${jvmRoot}") {
+						include(name: "${jvm}.zip")
+					}
+				}	
+			}
+		}	
+	}
+}
+
+subprojects {
+		
+	/////			\\\\\
+	///// QA TASKS	\\\\\
+	/////			\\\\\
+	
+	/*
+	/	TESTNG & COBERTURA
+	*/
+	
+	task copyClassesForInstrumetation (type: Copy) {
+		from "${buildClassesMain}"
+		into "${buildInstrumentedClasses}"
+		include '**/*.class'
+		includeEmptyDirs = false
+		destinationDir = file("${buildInstrumentedClasses}")
+	}
+			
+	task executeTestNG (type: Test, dependsOn: [copyClassesForInstrumetation, compileTestJava]) {
+		//General configuration
+		useTestNG() {
+			suites file("${resourcesTestNG}")
+			outputDirectory = file("${buildQATestTestdata}")
+			useDefaultListeners = true
+		}
+		ignoreFailures = true
+		testClassesDir = copyClassesForInstrumetation.destinationDir
+		include '**/*.class'
+		scanForTestClasses = false
+		reports.html.destination = file("${buildQATestTestdata}")
+		classpath = files("${buildInstrumentedClasses}")
+		classpath += files("${buildClassesTest}")
+		
+		
+		ext.customJvmArgs = "-XX:-UseSplitVerifier"
+		jvmArgs = [customJvmArgs]
+		
+		//create html pages that link to the interesting parts
+		doLast {
+			new File("${buildQATest}", "coverage.html").text = "<meta http-equiv=\"refresh\" content=\"0; url=coveragedata/index.html\" >"
+			new File("${buildQATest}", "testresult.html").text = "<meta http-equiv=\"refresh\" content=\"0; url=testdata/index.html\" >"
+			new File("${buildQATest}", "testreport.html").text = "<meta http-equiv=\"refresh\" content=\"0; url=testdata/emailable-report.html\" >"
+		}
+	}
+	
+	/*
+	/	PMD
+	*/
+	
+	//failureProperty nicht gesetzt
+	pmd {
+		sourceSets = [sourceSets.main]
+		ruleSetFiles = files("${pmdRulesFile}")
+		reportsDir = file("${buildQAAnalysisPMD}")
+		ignoreFailures = true
+	}
+	
+	task pmdHtmlReport << {
+		ant.xslt(in: "${buildQAAnalysisPMD}/main.xml",
+	             style: "${pmdReportFile}",
+	             out: "${buildQAAnalysisPMD}/sortable_report.html")
+	    ant.copy(todir: "${buildQAAnalysisPMD}", file: "${pmdSortableFile}")      
+	    new File("${buildQAAnalysis}", "pmd.html").text = "<meta http-equiv=\"refresh\" content=\"0; url=pmd/sortable_report.html\" >"         
+	}
+	pmdMain.finalizedBy pmdHtmlReport
+	/*
+	/	CHECKSTYLE
+	*/
+	
+	//failureProperty nicht gesetzt
+	//maxWarning & maxError nicht gesetzt
+	checkstyle {
+		sourceSets = [sourceSets.main]
+		configFile = file("${checkstyleConfigFile}")
+		ignoreFailures  = true
+		reportsDir = file("${buildQAAnalysisCheckstyle}")
+	}
+	checkstyleMain {
+		checkstyleClasspath = configurations.checkstyle
+	}
+	
+	task checkstyleHtmlReport << {
+		ant.xslt(in: "${buildQAAnalysisCheckstyle}/main.xml",
+	             style: "${checkstyleReportFile}",
+	             out: "${buildQAAnalysisCheckstyle}/../checkstyle.html")
+	}
+	checkstyleMain.finalizedBy checkstyleHtmlReport
+	
+	/*
+	/	FINDBUGS
+	*/
+	findbugs {
+		sourceSets = [sourceSets.main]
+		includeFilter = file("${findbugsConfigInclude}")
+		excludeFilter = file("${findbugsConfigExclude}")
+		reportsDir = file("${buildQAAnalysisFindbugs}")
+		ignoreFailures  = true
+	}
+	
+	task findbugsHtmlReport << {
+		ant.xslt(in: "${buildQAAnalysisFindbugs}/main.xml",
+	             style: "${findbugsConfigFancyHist}",
+	             out: "${buildQAAnalysisFindbugs}/../findbugs.html")
+	} 
+	findbugsMain.finalizedBy findbugsHtmlReport
+	
+	/*
+	/	CPD
+	*/
+	//plugin settings
+	cpd {
+		minimumTokenCount = 100
+		language = 'java'
+	}
+	
+	task cpdHtmlReport << {
+		ant.xslt(in: "${buildQAAnalysisCPD}/main.xml",
+	             style: "${cpdReportFile}",
+	             out: "${buildQAAnalysisCPD}/../cpd.html")
+	}
+	cpdCheck.finalizedBy cpdHtmlReport
+
+}

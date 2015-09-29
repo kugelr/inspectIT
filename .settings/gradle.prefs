@@ -1,0 +1,12 @@
+{
+  "1.0": {
+    "project_path": ":",
+    "project_dir": "/home/rk/gradle-project/inspectIT",
+    "connection_project_dir": "/home/rk/gradle-project/inspectIT",
+    "connection_gradle_user_home": "/home/rk/.gradle",
+    "connection_gradle_distribution": "GRADLE_DISTRIBUTION(LOCAL_INSTALLATION(/home/rk/programs/gradle-2.6))",
+    "connection_java_home": null,
+    "connection_jvm_arguments": "",
+    "connection_arguments": ""
+  }
+}
