@@ -21,6 +21,41 @@ allprojects {
 	apply from: file(propertiesFile.absolutePath)
 }
 
+task clean {
+    subprojects.each {
+        it.afterEvaluate {
+            def cleanTask = it.tasks.findByName('clean')
+            if (cleanTask) {
+                dependsOn(cleanTask)
+            }
+        }
+    }
+}
+
+task buildAll {
+
+}
+
+task downloadJVM << {
+	//iterating over jvmList - right now looks it looks like: jvmList = ['jre7-linux-x64', 'jre7-linux-x86', 'jre7-windows-x86', 'jre7-windows-x64']
+	jvmListDownload.each { jvm ->
+		//create a File Object of Path+File I want to download. For example: /home/rk/gradle-project/inspectIT/CMR/src/main/external-resources/jvm/jre7-linux-x64.zip 
+		File jvmFile = new File("${jvmRoot}/${jvm}.zip")
+		//check whether the file is already present
+		if(!jvmFile.exists()){
+			//download the file from the ftp server
+			ant {
+				taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
+				ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJvmInstallations}") {
+					fileset(dir: "${jvmRoot}") {
+						include(name: "${jvm}.zip")
+					}
+				}	
+			}
+		}	
+	}
+}
+
 subprojects {
 		
 	/////			\\\\\

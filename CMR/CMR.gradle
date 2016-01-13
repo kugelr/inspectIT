@@ -6,8 +6,7 @@ apply plugin: "java"
 
 apply from: 'PropertiesCMR.gradle'
 
-defaultTasks "jar", "packageJVM"
-//defaultTasks "cmrReleaseAndAnalyze"
+defaultTasks "cmrReleaseAndAnalyze"
 
 //some CMR specific properties
 ext {
@@ -61,7 +60,8 @@ executeTestNG {
 	//TODO
 	//transform the cmrJavaOpts32bit property
 
-	jvmArgs = ["-XX:-UseSplitVerifier","-javaagent:${classmexerPath}", cmrJavaOpts32bit]
+	jvmArgs = ["-XX:-UseSplitVerifier","-javaagent:${classmexerPath}"]
+	jvmArgs += cmrJavaOptsForTests
 }
 
 compileJava {
@@ -110,7 +110,7 @@ task copyCMRResources(type: Copy) {
 jar {
 	//prepare manifest during runtime because the libs folder has to be created first
 	doFirst {
-		ext.manifestLibs = fileTree(dir:"${buildReleaseRootCMR}/libs", include: "**/*.jar").files.collect{'libs/' + it.name}.iterator().join(', ')
+		ext.manifestLibs = fileTree(dir:"${buildReleaseRootCMR}/libs", include: "**/*.jar").files.collect{'libs/' + it.name}.iterator().join(' ')
 		manifest {
 			attributes(
 				"Main-Class": "info.novatec.inspectit.cmr.CMR",
@@ -123,34 +123,13 @@ jar {
 	archivesBaseName = "${distJarName}"
 }
 
-///////////////// JVM DOWNLOAD AND STUFF
-
-task downloadJVM << {
-	//iterating over jvmList - right now looks it looks like: jvmList = ['jre7-linux-x64', 'jre7-linux-x86', 'jre7-windows-x86', 'jre7-windows-x64']
-	jvmList.each { jvm ->
-		//create a File Object of Path+File I want to download. For example: /home/rk/gradle-project/inspectIT/CMR/src/main/external-resources/jvm/jre7-linux-x64.zip 
-		File jvmFile = new File("${jvmRoot}/${jvm}.zip")
-		//check whether the file is already present
-		if(!jvmFile.exists()){
-			//download the file from the ftp server
-			ant {
-				taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
-				ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJvmInstallations}") {
-					fileset(dir: "${jvmRoot}") {
-						include(name: "${jvm}.zip")
-					}
-				}	
-			}
-		}	
-	}
-}
 
 ext.os = ""
 ext.arc = ""
 ext.osArc = ""
 ext.command = ""
-task packageJVM(dependsOn: downloadJVM) {
-	jvmList.each { jvm ->
+task packageJVM(dependsOn: rootProject.downloadJVM) {
+	jvmListPackage.each { jvm ->
 		//read operating system
 		if("${jvm}".contains('windows')) {
 			os = 'windows'
@@ -176,23 +155,26 @@ task packageJVM(dependsOn: downloadJVM) {
 			}
 			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.bat', "${command}", "${name}")
 			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
-			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.sh", jvm, "zip", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")
+			deleteExpandedArchive()
+			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.bat", jvm, "zip", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")
 		}
 		else if (os == 'linux') {
 			if(arc == 'x86') {
 				command = "${cmrJavaCommandLinux} ${cmrJavaMemory32bit} ${cmrJavaOpts32bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
 			}
 			else if (arc == 'x64'){
-				command = "${cmrJavaCommandWin} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
+				command = "${cmrJavaCommandLinux} ${cmrJavaMemory64bit} ${cmrJavaOpts64bit} ${cmrJavaOptsLinux} ${cmrJavaLocgcLinux} -jar ${distJarName}.jar"
 			}
 			//create task for certain os&arc
 			copyOsSpecificFiles("${mainExtResources}", "${buildReleaseRoot}/tmp/${os}/${arc}", 'startup.sh', "${command}", "${name}")
 			unzipOsSpecificJre("${buildReleaseRoot}/tmp/${os}/${arc}", jvm)
+			deleteExpandedArchive()
 			packageCMR("${buildReleaseRoot}/tmp/${os}/${arc}/startup.sh", jvm, "tar.gz", "${buildReleaseRoot}/tmp/${os}/${arc}/jre")	
 		}
 		//execute certain task
 		packageJVM.finalizedBy "copySpecificFilesFor${osArc}"
 		packageJVM.finalizedBy "unzipSpecificJreFor${osArc}"
+		packageJVM.finalizedBy "deleteExpandedArchives${osArc}"
 		packageJVM.finalizedBy "packageCMRFor${osArc}"
 	}
 }
@@ -201,20 +183,29 @@ task packageJVM(dependsOn: downloadJVM) {
 //trying to create a dynamicTask
 def copyOsSpecificFiles(fromDir, toDir, fileName, command, dependsOn) {
     return tasks.create("copySpecificFilesFor${osArc}", Copy) {
-        from fromDir 
-        include fileName
+        from fromDir
         into toDir 
-        filter{
-        		String line -> line.replaceAll('#COMMAND#', command)
-        }
+        include fileName 
+       	filter{
+        	String line -> line.replaceAll('#COMMAND#', command)
+        }	
     }
 }
 
+def deleteExpandedArchive() {
+	return tasks.create("deleteExpandedArchives${osArc}", Delete) {
+		delete "build/tmp/expandedArchives"
+	}
+}
+
+
 def unzipOsSpecificJre(toDir, jvm) {
 	return tasks.create("unzipSpecificJreFor${osArc}", Copy) {
-		dependsOn downloadJVM 
+		dependsOn rootProject.downloadJVM 
+		finalizedBy "deleteExpandedArchives${osArc}"
 		from(zipTree(file("${jvmRoot}/${jvm}.zip")))
 		into "${toDir}/jre"
+		destinationDir = file("${toDir}/jre")
 	}
 }
 
@@ -231,84 +222,9 @@ def packageCMR(startupFile, jvm, fileExtension, jre) {
 		into("CMR/jre"){
 			from file("${jre}")
 		}
+		
 	}
 }
-
-task executeDynamicTasks {
-
-}
-
-//Pseudo if für cmr distributionen
-/*
-jvmList.each { jvm ->
-	//checking for architecture
-	if(jvm.contains(x86)){
-	 	set arc = x86
-	} 
-	else if (jvm.contains(x64)){
-		set arc = x64
-	}
-	
-	//checking for os
-	if(jvm.contains(windwos)){
-	 	set os = windows
-	} 
-	else if (jvm.contains(linux)){
-		set os = linux
-	}
-	
-	if(os=linux) {
-		copy startup.sh from A to B
-		replace(#COMMAND#, startupcommand+linux+arc)
-		zip(name=linux+arc) 
-	}
-	else if(os=windows) {
-		copy startup.bat from A to B
-		replace(#COMMAND#, startupcommand+windows+arc)
-		zip(name=windows+arc)
-	}		
-}	
-
-*/
-
-
-/*
-task downloadJava15 {
-	//download from ftp server if zip file does not already exist
-	File java15zip = new File("${java15RuntimePath}/${ftpInternalJava15runtimeFile}")
-	if(!java15zip.exists()){
-		ant {
-			taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
-			ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpInternalJava15runtimePath}") {
-				fileset(dir: "${java15RuntimePath}") {
-					include(name: "${ftpInternalJava15runtimeFile}")
-				}
-			}	
-		}
-	}
-	else {
-		println "${ftpInternalJava15runtimeFile} already exists in ${java15RuntimePath} - Skipping FTP download"
-	}
-	outputs.file java15zip
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //QA Targets
@@ -352,6 +268,7 @@ cobertura {
 
 task cmrRelease {
 	dependsOn(build)
+	dependsOn(packageJVM)
 }
 
 task cmrAnalyze {

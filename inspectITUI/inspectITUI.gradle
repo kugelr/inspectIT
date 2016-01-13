@@ -1,0 +1,160 @@
+apply plugin: "java"
+
+apply from: 'propertiesUI.gradle'
+
+defaultTasks "initCopy", "unzipEclipse", "releaseUi"
+
+task initCopy(type: Copy) {
+	into ("plugins") {
+		from configurations.uiOsgi
+		from configurations.commonsProd
+		from configurations.commonsCSProd
+		exclude '**/*sources*.jar'
+	}
+
+	into ("plugins/info.novatec.inspectit.commons") {
+		from project(':Commons').jar.inputs.files
+		exclude 'MANIFEST.MF'
+	}
+	
+	into ("plugins/info.novatec.inspectit.commonscs") {
+		from project(':CommonsCS').jar.inputs.files
+		exclude 'MANIFEST.MF'
+	}
+	
+	into ("plugins/info.novatec.inspectit.rcp") {
+		from "${mainResources}" 
+	}
+	
+	into ("plugins/info.novatec.inspectit.rcp/bin") {
+		from "${baseDir}"
+		include 'bin' 
+	}
+	into ("plugins/info.novatec.inspectit.rcp/src") {
+		from "${mainJava}" 
+	}
+	into ("plugins/info.novatec.inspectit.rcp/test") {
+		from "${testJava}" 
+	}
+	destinationDir = file("${buildDirectory}")
+}
+
+task downloadEclipse {
+	//download from ftp server if zip file does not already exist
+	File eclipseZip = new File("${localEclipseDir}/${ftpEclipseFile}")
+	if(!eclipseZip.exists()){
+		ant {
+			taskdef(name: 'ftp', classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP', classpath: configurations.commonsProd.asPath) 
+			ftp(action: "get", server: "${ftpServer}", userid: "${ftpUser}", password: "${ftpPw}", remotedir: "${ftpEclipseDir}") {
+				fileset(dir: "${localEclipseDir}") {
+					include(name: "${ftpEclipseFile}")
+				}
+			}	
+		}
+	}
+	else {
+		println "${ftpEclipseFile} already exists in ${localEclipseDir} - Skipping FTP download"
+	}
+	outputs.file eclipseZip
+}
+
+task unzipEclipse (type: Copy, dependsOn: downloadEclipse){
+	//takes the downloaded file from task:downloadJava15 and unzips it
+	from zipTree(tasks.downloadEclipse.outputs.files[0])
+	into file("${localEclipseDir}")
+}
+
+task pdeBuild (type: JavaExec, dependsOn: initCopy) {
+	classpath = files("${localEclipseDir}/base/eclipse/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar")
+	main = 'org.eclipse.equinox.launcher.Main'
+	args = ['-application', 'org.eclipse.ant.core.antRunner', '-buildfile', "${eclipseLocation}/plugins/org.eclipse.pde.build_${pdeBuildPluginVersion}/scripts/productBuild/productBuild.xml", "-Dtimestamp=${timestamp}", "-Drelease.basedir=${buildReleaseRoot}"]
+}
+
+//this task is necessery because the releaseUi{Os}{Arch} task don not have the permission to overwrite
+//the tmp archives which are created by gradle
+//TODO: find a more "sexy" solution for this workaround
+task deleteExpandedArchives(type: Delete){
+	delete "build/tmp/expandedArchives"
+}
+
+task releaseUiWin32 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	//put a dependencies for downloadJVM from the CMR project
+	//maybe I should outsource all these download-stuff target to the parent build
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-win32.win32.x86.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-win32.win32.x86.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	into("inspectit/jre"){
+		from zipTree("${sharedResources}/jvm/jre7-windows-x86.zip")
+	}
+}
+
+task releaseUiWin64 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-win32.win32.x86_64.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-win32.win32.x86_64.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	into("inspectit/jre"){
+		from zipTree("${sharedResources}/jvm/jre7-windows-x64.zip")
+	}
+}
+
+task releaseUiLinux32 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-linux.gtk.x86.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-linux.gtk.x86.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	into("inspectit/jre"){
+		from zipTree("${sharedResources}/jvm/jre7-linux-x86.zip")
+	}
+}
+
+task releaseUiLinux64 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-linux.gtk.x86_64.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-linux.gtk.x86_64.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	into("inspectit/jre"){
+		from zipTree("${sharedResources}/jvm/jre7-linux-x64.zip")
+	}
+}
+
+task releaseUiMac32 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-macosx.cocoa.x86.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-macosx.cocoa.x86.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	//no jre included in the MacOS 32-bit version
+}
+
+task releaseUiMac64 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
+	destinationDir = file("${buildReleaseRoot}/dist")
+	archiveName = "inspectit-macosx.cocoa.x86_64.zip"
+	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-macosx.cocoa.x86_64.zip")
+	into("inspectit"){
+		from files(sharedResourcesLicense)
+		from file("${mainResources}/logging-config.xml")
+	}
+	into("inspectit/jre"){
+		from zipTree("${sharedResources}/jvm/jre7-macosx-x64.zip")
+	}
+}
+
+task releaseUi (dependsOn: [releaseUiWin32, releaseUiWin64, releaseUiLinux32, releaseUiLinux64, releaseUiMac32, releaseUiMac64]){
+	//nothing to do here
+}
