@@ -54,13 +54,6 @@ task unzipJava15 (type: Copy, dependsOn: downloadJava15){
 	include 'rt.jar'
 }
 
-/*tasks.matching {
-	it.name.equals('executeTestNG')
-}.each {
-println it.name
-configure(it) {
-println '22222222222222222222222222222222' */
-
 executeTestNG {
 	classpath += configurations.commonsProd
 	classpath += configurations.commonsTest
@@ -142,11 +135,6 @@ task commonsAnalyze {
 task commonsReleaseAndAnalyze(type: Delete) {
 	dependsOn(commonsAnalyze, commonsRelease, build)
 	commonsRelease.mustRunAfter(commonsAnalyze)
-	
-	//somehow these two folders are getting created while building
-	//they contain redundant information
-	//right now i dont know why they are created - simple delete them at the end of the build
-	delete "${buildRoot}/instrumented_classes", "${buildRoot}/test-results"
 }
 
 task myTask {

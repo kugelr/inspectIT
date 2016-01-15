@@ -1,9 +1,18 @@
+/**
+
+-------------------- inspectIT UI --------------------
+Space for some important documentation
+
+**/
+
 apply plugin: "java"
-
 apply from: 'propertiesUI.gradle'
+defaultTasks "releaseUi"
 
-defaultTasks "initCopy", "unzipEclipse", "releaseUi"
-
+/**
+  * copies relevant files to the 'plugins' folder
+  * this folder is needed for the pdebuild
+ */
 task initCopy(type: Copy) {
 	into ("plugins") {
 		from configurations.uiOsgi
@@ -39,6 +48,10 @@ task initCopy(type: Copy) {
 	destinationDir = file("${buildDirectory}")
 }
 
+/**
+  * download the eclipse package from the NT-FTP-Server to the shared resources folder
+  * skiped if a zip file with the same name already exists in the shared-resources folder
+ */ 
 task downloadEclipse {
 	//download from ftp server if zip file does not already exist
 	File eclipseZip = new File("${localEclipseDir}/${ftpEclipseFile}")
@@ -58,28 +71,39 @@ task downloadEclipse {
 	outputs.file eclipseZip
 }
 
+/**
+  * unzip the downloaded eclipse zip file
+ */ 
 task unzipEclipse (type: Copy, dependsOn: downloadEclipse){
-	//takes the downloaded file from task:downloadJava15 and unzips it
-	from zipTree(tasks.downloadEclipse.outputs.files[0])
+	from zipTree(tasks.downloadEclipse.outputs.files[0]) //refers to the defined output of the the downloadEclipse task
 	into file("${localEclipseDir}")
 }
 
+/**
+  * the PDE-Build...
+  * only god knows how this works... and he's not even sure about it...
+ */ 
 task pdeBuild (type: JavaExec, dependsOn: initCopy) {
 	classpath = files("${localEclipseDir}/base/eclipse/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar")
 	main = 'org.eclipse.equinox.launcher.Main'
 	args = ['-application', 'org.eclipse.ant.core.antRunner', '-buildfile', "${eclipseLocation}/plugins/org.eclipse.pde.build_${pdeBuildPluginVersion}/scripts/productBuild/productBuild.xml", "-Dtimestamp=${timestamp}", "-Drelease.basedir=${buildReleaseRoot}"]
 }
 
-//this task is necessery because the releaseUi{Os}{Arch} task don not have the permission to overwrite
-//the tmp archives which are created by gradle
-//TODO: find a more "sexy" solution for this workaround
+/** 
+  * this task is necessery because the releaseUi{Os}{Arch} task don not have the permission to overwrite
+  * the tmp archives which are created by gradle
+  * TODO: find a more "sexy" solution for this workaround 
+ */
 task deleteExpandedArchives(type: Delete){
 	delete "build/tmp/expandedArchives"
 }
 
+/**
+  * packaging of the inspectIT UI modules
+  * TODO: this is pretty redundant. I am quite sure there is a more flexible
+  * and dynamic way to achieve the same result with less code. maybe like the packaging of the CMR 
+ */ 
 task releaseUiWin32 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, rootProject.downloadJVM]) {
-	//put a dependencies for downloadJVM from the CMR project
-	//maybe I should outsource all these download-stuff target to the parent build
 	destinationDir = file("${buildReleaseRoot}/dist")
 	archiveName = "inspectit-win32.win32.x86.zip"
 	from zipTree("${pdeBuildDir}/I.inspectit/inspectit-win32.win32.x86.zip")
@@ -155,6 +179,9 @@ task releaseUiMac64 (type: Zip, dependsOn: [pdeBuild, deleteExpandedArchives, ro
 	}
 }
 
+/**
+  * Call this task to build the UI for all supported OS and architectures
+ */
 task releaseUi (dependsOn: [releaseUiWin32, releaseUiWin64, releaseUiLinux32, releaseUiLinux64, releaseUiMac32, releaseUiMac64]){
 	//nothing to do here
 }

@@ -32,8 +32,8 @@ task clean {
     }
 }
 
-task buildAll {
-
+task buildAll {	
+	
 }
 
 task downloadJVM << {
